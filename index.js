@@ -5,6 +5,7 @@ const resourceRoute = require('./routes/resource');
 const searchRoute = require('./routes/search');
 
 module.exports = async (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
   const { resource, search } = mQuery(req);
 
   if (resource) {

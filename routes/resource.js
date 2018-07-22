@@ -37,9 +37,9 @@ module.exports = () => async resource => {
 
   const seasonsJsObject = matchFirst(html, MATCHER.seasons);
   const seasonsJsonObject = seasonsJsObject.replace(/'/g, '"');
-  const seasons = JSON.parse(seasonsJsonObject);
+  const seasonsObj = JSON.parse(seasonsJsonObject);
 
-  fixSeasonsObject(seasons);
+  const seasons = fixSeasonsObject(seasonsObj);
 
   return {
     poster,
@@ -49,7 +49,20 @@ module.exports = () => async resource => {
   };
 };
 
-function fixSeasonsObject(seasons) {
+function fixSeasonsObject(seasonsOrSeason) {
+  // If there are seasons, then "playlist" property presented
+  const isSingleSeason = !seasonsOrSeason[0].playlist;
+  let seasons;
+
+  if (isSingleSeason) {
+    seasons = [{
+      comment: '1 Сезон',
+      playlist: seasonsOrSeason,
+    }];
+  } else {
+    seasons = seasonsOrSeason;
+  }
+
   seasons.forEach(season => {
     season.playlist.forEach(series => {
       // Replace html tags
@@ -61,6 +74,7 @@ function fixSeasonsObject(seasons) {
       const files = series.file.split(', ');
 
       fix720resolution(files);
+      mapFiles(files);
 
       delete series.file;
 
@@ -69,6 +83,15 @@ function fixSeasonsObject(seasons) {
   });
 
   return seasons;
+}
+
+function mapFiles(files) {
+  for (let i = 0; i < files.length; i++) {
+    files[i] = {
+      name: files[i],
+      quality: matchFirst(files[i], /\/(\d+)\./, parseInt),
+    }
+  }
 }
 
 /**

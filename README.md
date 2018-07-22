@@ -26,7 +26,7 @@ Returns info about video by it's url (can be taken from `search` results). Respo
 
 ```js
 {
-  files: Array<string>,
+  files: Array<{name: string, quality: number}>,
   poster: string,
   title: string,
   type: 'film'
@@ -40,7 +40,7 @@ Returns info about video by it's url (can be taken from `search` results). Respo
     comment: string,
     playlist: Array<{
       comment: string,
-      files: Array<string>
+      files: Array<{name: string, quality: number}>
     }>
   }>
   title: string,
